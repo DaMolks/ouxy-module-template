@@ -1,0 +1,60 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'org.jetbrains.kotlin.plugin.serialization'
+}
+
+android {
+    namespace 'com.damolks.ouxy.modules.template'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 24
+        multiDexEnabled true
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+task createModuleJar(type: Jar) {
+    dependsOn 'assembleRelease'
+    
+    archiveFileName = 'template-module.jar'
+    destinationDirectory = file("${rootDir}/releases")
+    
+    from android.sourceSets.main.java.srcDirs
+    from fileTree(dir: "${buildDir}/intermediates/javac/release/classes")
+    from fileTree(dir: "${buildDir}/tmp/kotlin-classes/release")
+    
+    exclude 'BuildConfig.class'
+    exclude 'R.class'
+    exclude 'R$*.class'
+    
+    doFirst {
+        destinationDirectory.get().asFile.mkdirs()
+    }
+}
+
+dependencies {
+    compileOnly files('libs/ouxy-sdk.jar')
+    
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+}
